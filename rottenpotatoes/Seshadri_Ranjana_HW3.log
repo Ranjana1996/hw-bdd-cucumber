@@ -1,0 +1,81 @@
+Using the default profile...
+Feature: display list of movies filtered by MPAA rating
+  As a concerned parent
+  So that I can quickly browse movies appropriate for my family
+  I want to see movies matching only certain MPAA ratings
+
+  Background: movies have been added to database # features/filter_movie_list.feature:7
+    Given the following movies exist:            # features/step_definitions/movie_steps.rb:3
+      | title                   | rating | release_date |
+      | Aladdin                 | G      | 25-Nov-1992  |
+      | The Terminator          | R      | 26-Oct-1984  |
+      | When Harry Met Sally    | R      | 21-Jul-1989  |
+      | The Help                | PG-13  | 10-Aug-2011  |
+      | Chocolat                | PG-13  | 5-Jan-2001   |
+      | Amelie                  | R      | 25-Apr-2001  |
+      | 2001: A Space Odyssey   | G      | 6-Apr-1968   |
+      | The Incredibles         | PG     | 5-Nov-2004   |
+      | Raiders of the Lost Ark | PG     | 12-Jun-1981  |
+      | Chicken Run             | G      | 21-Jun-2000  |
+    And I am on the RottenPotatoes home page     # features/step_definitions/web_steps.rb:44
+    Then 10 seed movies should exist             # features/step_definitions/movie_steps.rb:13
+
+  Scenario: restrict to movies with 'PG' or 'R' ratings         # features/filter_movie_list.feature:25
+    # When I check the following ratings: PG, R
+    # And I uncheck the following ratings: G, PG-13, NC-17
+    # And I press "ratings_submit"
+    # Then I should not see movies with titles: Aladdin, The Help, Chocolat, 2001: A Space Odyssey, Chicken Run
+    # And I should see movies with titles: The Terminator, When Harry Met Sally, Amelie, The Incredibles, Raiders of the Lost Ark
+    When I check the following ratings: "PG R"                  # features/step_definitions/movie_steps.rb:49
+    And I uncheck the following ratings: "PG-13 G"              # features/step_definitions/movie_steps.rb:49
+    And I press "Refresh"                                       # features/step_definitions/web_steps.rb:52
+    Then I should be on the RottenPotatoes home page            # features/step_definitions/web_steps.rb:230
+    And I should see movies of following ratings: "PG R"        # features/step_definitions/movie_steps.rb:78
+    And I should not see movies of following ratings: "PG-13 G" # features/step_definitions/movie_steps.rb:78
+
+  # enter step(s) to check the 'PG' and 'R' checkboxes
+  # enter step(s) to uncheck all other checkboxes
+  # enter step to "submit" the search form on the homepage
+  # enter step(s) to ensure that PG and R movies are visible
+  # enter step(s) to ensure that other movies are not visible
+  Scenario: all ratings selected                       # features/filter_movie_list.feature:44
+    When I check the following ratings: "PG R PG-13 G" # features/step_definitions/movie_steps.rb:49
+    And I press "Refresh"                              # features/step_definitions/web_steps.rb:52
+    Then I should be on the RottenPotatoes home page   # features/step_definitions/web_steps.rb:230
+    And I should see all the movies                    # features/step_definitions/movie_steps.rb:65
+# see assignment
+
+Feature: display list of movies sorted by different criteria
+  As an avid moviegoer
+  So that I can quickly browse movies based on my preferences
+  I want to see movies sorted by title or release date
+
+  Background: movies have been added to database # features/sort_movie_list.feature:7
+    Given the following movies exist:            # features/step_definitions/movie_steps.rb:3
+      | title                   | rating | release_date |
+      | Aladdin                 | G      | 25-Nov-1992  |
+      | The Terminator          | R      | 26-Oct-1984  |
+      | When Harry Met Sally    | R      | 21-Jul-1989  |
+      | The Help                | PG-13  | 10-Aug-2011  |
+      | Chocolat                | PG-13  | 5-Jan-2001   |
+      | Amelie                  | R      | 25-Apr-2001  |
+      | 2001: A Space Odyssey   | G      | 6-Apr-1968   |
+      | The Incredibles         | PG     | 5-Nov-2004   |
+      | Raiders of the Lost Ark | PG     | 12-Jun-1981  |
+      | Chicken Run             | G      | 21-Jun-2000  |
+    And I am on the RottenPotatoes home page     # features/step_definitions/web_steps.rb:44
+    Then 10 seed movies should exist             # features/step_definitions/movie_steps.rb:13
+
+  Scenario: sort movies alphabetically                         # features/sort_movie_list.feature:25
+    When I follow "Movie Title"                                # features/step_definitions/web_steps.rb:56
+    Then I should see "2001: A Space Odyssey" before "Aladdin" # features/step_definitions/movie_steps.rb:20
+    And I should see "Aladdin" before "Amelie"                 # features/step_definitions/movie_steps.rb:20
+
+  Scenario: sort movies in increasing order of release date          # features/sort_movie_list.feature:31
+    When I follow "Release Date"                                     # features/step_definitions/web_steps.rb:56
+    Then I should see "Aladdin" before "Amelie"                      # features/step_definitions/movie_steps.rb:20
+    And I should see "When Harry Met Sally" before "The Incredibles" # features/step_definitions/movie_steps.rb:20
+
+4 scenarios (4 passed)
+28 steps (28 passed)
+0m0.768s
